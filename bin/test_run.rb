@@ -2,6 +2,8 @@
 
 require_relative "../config/environment.rb"
 
+`python -m SimpleHTTPServer`
+
 crawler = TorCrawler.new("http://p4u4zo2jzb6o6xu3.onion/")
 
 crawler.crawl
