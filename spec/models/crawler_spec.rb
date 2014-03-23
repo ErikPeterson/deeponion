@@ -26,7 +26,7 @@ describe TorCrawler do
     end
 
     it "can resolve hidden services via tor" do
-      tc = TorCrawler.new("p4u4zo2jzb6o6xu3.onion/index.html")
+      tc = TorCrawler.new("http://p4u4zo2jzb6o6xu3.onion/index.html")
       tc.crawl
       expect(tc.links.length).to eq(4)
     end

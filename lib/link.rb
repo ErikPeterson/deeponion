@@ -1,9 +1,9 @@
 class Link
-  attr_reader :href, :text, :found_on
+  attr_reader :href, :content, :found_on
 
-    def initialize(href, text, found_on)
+    def initialize(href, found_on, content="")
       @href = href
-      @text = text
+      @content = content
       @found_on = found_on
     end
 

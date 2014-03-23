@@ -24,7 +24,10 @@ class TorCrawler
 
   def get_links
     html.css('a').each do |link|
-      links << { :link => link, :found_on => uri.to_s }
+      href = link.attribute("href").value
+      if href && href !=~ /[mailto:|javascript:]/
+        links << { :href => href, :content => link.content, :found_on => uri.to_s }
+      end
     end
   end
 
