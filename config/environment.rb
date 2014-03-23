@@ -1,7 +1,9 @@
+require 'bundler'
+Bundler.require(:default)
+
 require 'net/http'
 require 'open-uri'
-require 'socksify'
 require 'socksify/http'
-require 'nokogiri'
 
 require_relative "../lib/crawler.rb"
+require_relative "../lib/link.rb"
