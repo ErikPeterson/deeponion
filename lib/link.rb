@@ -1,50 +1,43 @@
 class Link
-  attr_reader :href, :content, :found_on
+  attr_reader :href, :content, :found_on, :full_path
 
     def initialize(href, found_on, content="")
       @href = href
       @content = content
       @found_on = found_on
+      @full_path = get_full_path
     end
 
     def found_on_uri
-      @found_on_uri ||= URI.parse(self[:href])
+      @found_on_uri ||= URI.parse(found_on)
     end
 
     def uri
-      @uri ||= URI.parse(self[:href])
-    end
-
-    def full_path
-      @full_path ||= get_full_path
+      @uri ||= URI.parse(full_path)
     end
 
 
     def onion?
       full_path =~ /[[aA-zZ]|[0-9]]\.onion/
     end
-private
 
-  def get_full_path
-    return href if !uri.host == nil
-    parse_abs_path(found_on_uri, uri)
+
+
+    def get_full_path
+      return href if !(URI.parse(href).host == nil)
+      Link.parse_abs_path(found_on_uri, href)
+    end
+
+  def self.parse_abs_path(parent_uri, path)
+    (path[0] == "/") ? "#{parent_uri.scheme}://#{parent_uri.host}#{path}" : parse_relative(parent_uri, path)
   end
 
-  def self.parse_abs_path(parent_uri, uri)
-    if parent_uri.path =~ /\/\z/ && uri.path =~ /\A\//
-      "#{parent_uri.protocol}#{parent_uri.host}#{uri.path}"
-    elsif parent_uri.path !=~ /.*\/*\.[aA-zZ]{1,5}\z/
-      if uri.path =~ /\A\//
-        "#{parent_uri.to_s}#{uri.path}"
-      else
-        "#{parent_uri.to_s}/#{uri.path}"
-      end
+  def self.parse_relative(parent_uri, path)
+    if parent_uri.path =~ /\/$/
+      "#{parent_uri.scheme}://#{parent_uri.host}#{parent_uri.path}#{path}"
     else
-      if uri.path =~ /\A\//
-        "#{parent_uri.to_s.gsub(/\/.*\z/, "")}#{uri.path}"
-      else
-        "#{parent_uri.to_s.gsub(/\/.*\z/, "/")}#{uri.path}"
-      end
+      slice = parent_uri.path[0..(parent_uri.path =~ /\/\w+(\.\w+)?$/)]
+      "#{parent_uri.scheme}://#{parent_uri.host}#{slice}#{path}"
     end
   end
 

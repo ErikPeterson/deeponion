@@ -28,12 +28,13 @@ describe Link do
   end
 
   describe "#new" do
+
     before(:each) do
       @ref = @foreign_url_link
       @link = Link.new(@ref[:href], @ref[:found_on], @ref[:content])
     end
 
-    context "Link initializes with three arguments" do
+    context "Link initializes with three arguments, (href, found_on, content='')" do
 
       it "takes the path of a link as its first argument" do
         expect(@link.href).to eq(@ref[:href])
@@ -52,6 +53,42 @@ describe Link do
       end
 
     end
+
+  end
+
+  describe "instance methods" do
+
+    before(:each) do
+
+      @ref = @foreign_url_link
+      @link = Link.new(@ref[:href], @ref[:found_on], @ref[:content])
+      @ref2 = @local_relative_path_link
+      @rel_path_link = Link.new(@ref2[:href], @ref2[:found_on], @ref2[:content])
+      @ref3 = @local_absolute_page_link
+      @abs_path_link = Link.new(@ref3[:href], @ref3[:found_on], @ref3[:content])
+    end
+
+    context "#found_on_uri" do
+
+      it "returns a parsed URI object based on the found_on argument" do
+        expect(@link.found_on_uri.to_s).to eq(@ref[:found_on])
+      end
+
+    end
+
+    context "#uri" do
+
+      it "returns a parsed URI object based on the aboslute uri of the href argument" do
+        expect(@link.uri.to_s).to eq(@ref[:href])
+      end
+
+      it "can derive the correct URI from relative paths and local absolute paths" do
+        expect(@rel_path_link.uri.to_s).to eq("http://p4u4zo2jzb6o6xu3.onion/a/more/abstract/local/route")
+        expect(@abs_path_link.uri.to_s).to eq("http://p4u4zo2jzb6o6xu3.onion/page-2.html")
+      end
+
+    end
+
   end
 
 
