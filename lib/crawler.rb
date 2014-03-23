@@ -1,18 +1,20 @@
 class TorCrawler
+  UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0'
 
   attr_reader :response, :html, :uri, :links
 
   def initialize(uri)
     @uri = URI.parse(uri)
-    if @uri.host == nil || @uri.scheme == nil
+   if @uri.host == nil
       return raise ArgumentError
-    end
+   end
     @links = []
   end
 
   def get_response
-    Net::HTTP.SOCKSProxy('127.0.0.1', 9050).start(uri.host, uri.port) do |http|
-      @response = http.get(uri)
+    @con = Net::HTTP.SOCKSProxy('127.0.0.1', 9050)
+    @con.start(uri.hostname, uri.port, {"User-Agent" => UA}) do |http|
+      @response = http.get(uri.request_uri)
     end
   end
 
@@ -33,5 +35,8 @@ class TorCrawler
   end
 
   class ArgumentError < StandardError
+    def message
+      "URI must include http:// to resolve hidden service urls"
+    end
   end
 end

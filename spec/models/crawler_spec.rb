@@ -6,8 +6,7 @@ describe TorCrawler do
     it "takes a URL string as its single argument" do
       expect(TorCrawler.new("http://www.google.com").uri).to be_a(URI::Generic)
     end
-    it "rejects urls without a scheme or hostname" do
-      expect{TorCrawler.new("www.google.com")}.to raise_error(TorCrawler::ArgumentError)
+    it "rejects urls without a hostname" do
       expect{TorCrawler.new("/some/path/to/a/file")}.to raise_error(TorCrawler::ArgumentError)
     end
     it "sets the #uri attribute of the instance" do
@@ -24,6 +23,12 @@ describe TorCrawler do
       tc = TorCrawler.new("http://www.google.com")
       tc.crawl
       expect(tc.links).to_not be_empty
+    end
+
+    it "can resolve hidden services via tor" do
+      tc = TorCrawler.new("p4u4zo2jzb6o6xu3.onion/index.html")
+      tc.crawl
+      expect(tc.links.length).to eq(4)
     end
 
   end
