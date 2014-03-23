@@ -5,7 +5,7 @@ require 'net/http'
 require 'uri'
 require 'socksify/http'
 
-require_relative "../lib/crawler.rb"
+require_relative "../lib/tor_scraper.rb"
 require_relative "../lib/link.rb"
 
 TCPSocket::socks_server = "127.0.0.1"
