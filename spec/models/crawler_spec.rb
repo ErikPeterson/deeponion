@@ -19,16 +19,29 @@ describe TorCrawler do
 
   describe "#crawl" do
 
-    it "acts as the runner for the crawler, causing it to attempt to visit the uri and parse the links from the result" do
-      tc = TorCrawler.new("http://www.google.com")
-      tc.crawl
-      expect(tc.links).to_not be_empty
+    let(:vanilla_crawler){
+      TorCrawler.new("http://localhost:8080/index.html").tap{|c| c.crawl}
+    }
+    let(:hs_crawler){
+      TorCrawler.new("http://p4u4zo2jzb6o6xu3.onion/index.html").tap{|c| c.crawl}
+    }
+
+    it "acts as the runner for the crawler, causing it to attempt to visit the uri and parse the page" do
+      expect(vanilla_crawler.html).to be_a(Nokogiri::HTML::Document)
     end
 
     it "can resolve hidden services via tor" do
-      tc = TorCrawler.new("http://p4u4zo2jzb6o6xu3.onion/index.html")
-      tc.crawl
-      expect(tc.links.length).to eq(4)
+      expect(hs_crawler.html).to be_a(Nokogiri::HTML::Document)
+    end
+
+    it "gets a list of links on the page" do
+      expect(hs_crawler.links).to_not be_empty
+      expect(vanilla_crawler.links).to_not be_empty
+    end
+
+    it "gets basic information on the crawled page" do
+      expect(hs_crawler.page[:url]).to eq("http://p4u4zo2jzb6o6xu3.onion/index.html")
+      expect(vanilla_crawler.page[:url]).to eq("http://localhost:8080/index.html")
     end
 
   end

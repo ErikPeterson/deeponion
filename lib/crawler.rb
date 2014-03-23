@@ -1,7 +1,7 @@
 class TorCrawler
   UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0'
 
-  attr_reader :response, :html, :uri, :links
+  attr_reader :response, :html, :uri, :links, :page
 
   def initialize(uri)
     @uri = URI.parse(uri)
@@ -9,6 +9,7 @@ class TorCrawler
       return raise ArgumentError
    end
     @links = []
+    @page = {}
   end
 
   def get_response
@@ -31,10 +32,29 @@ class TorCrawler
     end
   end
 
+  def page_description
+    html.xpath("//meta[@name='Description']/@content")
+  end
+
+  def page_title
+    html.xpath("//title/@content")
+  end
+
+  def get_page
+    @page = {
+      :site => uri.host,
+      :url => uri.to_s,
+      :title => page_title,
+      :description => page_description,
+      :links => links
+    }
+  end
+
   def crawl
     get_response
     read
     get_links
+    get_page
   end
 
   class ArgumentError < StandardError
