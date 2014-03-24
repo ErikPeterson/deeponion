@@ -6,9 +6,10 @@ gem 'activerecord'
 gem 'rake'
 gem 'thin'
 gem 'rspec', :group => [:test]
-gem 'rspec-rails', :gropu => [:test]
+gem 'rspec-rails', :group => [:test]
 gem 'database_cleaner', :group => [:test]
 gem 'pry', :group => [:test]
+gem 'tor'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
