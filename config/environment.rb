@@ -1,9 +1,12 @@
+ENV['ENV'] ||= "development"
+
 require 'bundler'
 Bundler.require(:default)
 
 require 'net/http'
 require 'uri'
 require 'socksify/http'
+require 'active_record'
 
 require_relative "../lib/tor_scraper.rb"
 require_relative "../lib/link.rb"
