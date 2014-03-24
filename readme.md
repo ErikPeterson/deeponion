@@ -59,8 +59,13 @@ computer didn't have the resources to perform even simple tasks like saving docu
 Several programs began behaving in bizarre ways, including a local server that refused
 to die even after I restarted my computer and sent a kill messages to almost every
 process on the system. Finally, as I was hitting command + s to save my lab, I got
-an error message saying that my computer coudn't save the file. I tried again, and
+an error message saying that my computer couldn't save the file. I tried again, and
 got the same error message. I tried to close the program, and suddenly my computer
 turned off. When I booted it back up again, it couldn't read its own drive. Something
 in memory had become so corrupted that the computer could no longer find files. I had
 to completely wipe my computer and start over.
+
+Site has many pages (the pages on the site)
+     has many links => through pages
+Page has many links (the links on the page)
+Link belongs to page (the page the link appeared on)

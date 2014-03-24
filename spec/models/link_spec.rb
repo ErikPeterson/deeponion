@@ -31,25 +31,27 @@ describe Link do
 
     before(:each) do
       @ref = @foreign_url_link
-      @link = Link.new(@ref[:href], @ref[:found_on], @ref[:content])
+      @link = Link.new(@ref)
     end
 
-    context "Link initializes with three arguments, (href, found_on, content='')" do
+    context "Link initialzes with an attribute hash" do
 
-      it "takes the path of a link as its first argument" do
+      it "arg[:href] should contain the raw href attribute of the link" do
         expect(@link.href).to eq(@ref[:href])
       end
 
-      it "takes the url of the page the link appeared on as its second argument" do
+      it "arg[:found_on] should contain the full URL of the page the link was found on" do
         expect(@link.found_on).to eq(@ref[:found_on])
       end
 
-      it "takes the content of the link element as its optional third argument" do
+      it "arg[:content] (optional) contains the content of the link element"  do
         expect(@link.content).to eq(@ref[:content])
       end
 
-      it "will not initialize without either of its first two arguments" do
-        expect{Link.new("Link text")}.to raise_error
+      it "will not initialize without href or found_on" do
+          @link.found_on = nil
+
+        expect(@link.save).to eq(false)
       end
 
     end
@@ -61,11 +63,11 @@ describe Link do
     before(:each) do
 
       @ref = @foreign_url_link
-      @link = Link.new(@ref[:href], @ref[:found_on], @ref[:content])
+      @link = Link.new(@ref)
       @ref2 = @local_relative_path_link
-      @rel_path_link = Link.new(@ref2[:href], @ref2[:found_on], @ref2[:content])
+      @rel_path_link = Link.new(@ref2)
       @ref3 = @local_absolute_page_link
-      @abs_path_link = Link.new(@ref3[:href], @ref3[:found_on], @ref3[:content])
+      @abs_path_link = Link.new(@ref3)
     end
 
     context "#found_on_uri" do
@@ -79,6 +81,7 @@ describe Link do
     context "#uri" do
 
       it "returns a parsed URI object based on the aboslute uri of the href argument" do
+        
         expect(@link.uri.to_s).to eq(@ref[:href])
       end
 
