@@ -10,7 +10,7 @@ gem 'rspec-rails', :group => [:test]
 gem 'database_cleaner', :group => [:test]
 gem 'pry', :group => [:test]
 gem 'tor'
-
+gem 'vienna'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.3'

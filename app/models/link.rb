@@ -1,8 +1,9 @@
 class Link < ActiveRecord::Base
   validates_presence_of :href, :found_on, :full_path
+  validates_uniqueness_of :full_path, :scope => :found_on
   belongs_to :page
 
-  before_create do
+  before_validation(:on => [:create, :update, :save]) do
     self.full_path = get_full_path
   end
 
@@ -14,6 +15,9 @@ class Link < ActiveRecord::Base
       @uri ||= URI.parse(full_path)
     end
 
+    def local?
+      found_on_uri.host == uri.host
+    end
 
     def onion?
       full_path =~ /[[aA-zZ]|[0-9]]\.onion/
@@ -38,7 +42,8 @@ class Link < ActiveRecord::Base
       if parent_uri.path =~ /\/$/
         "#{parent_uri.scheme}://#{parent_uri.host}#{parent_uri.path}#{path}"
       else
-        slice = parent_uri.path[0..(parent_uri.path =~ /\/\w+(\.\w+)?$/)]
+        binding.pry
+        slice = (parent_uri.path =~ /\/\w+(\.\w+)?$/) ? parent_uri.path[0..(parent_uri.path =~ /\/\w+(\.\w+)?$/)] : "/"
         "#{parent_uri.scheme}://#{parent_uri.host}#{slice}#{path}"
       end
     end

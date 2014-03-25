@@ -33,17 +33,17 @@ class TorScraper
   end
 
   def page_description
-    html.xpath("//meta[@name='Description']/@content")
+    html.css("meta[name=description]")[0].attribute("content").value
   end
 
   def page_title
-    html.xpath("//title/@content")
+    html.css("title")[0].content
   end
 
   def get_page
     @page = {
-      :site => uri.host,
-      :url => uri.to_s,
+      :site_name => uri.host,
+      :href => uri.to_s,
       :title => page_title,
       :description => page_description,
       :links => links

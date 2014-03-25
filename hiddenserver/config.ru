@@ -1,3 +1,2 @@
-root=Dir.pwd
-puts ">>> Serving: #{root}"
-run Rack::Directory.new("#{root}")
+require 'vienna'
+run Vienna
