@@ -11,6 +11,7 @@ gem 'database_cleaner', :group => [:test]
 gem 'pry', :group => [:test]
 gem 'tor'
 gem 'vienna'
+gem 'pg'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.3'

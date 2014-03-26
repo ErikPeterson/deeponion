@@ -1,13 +1,19 @@
 module Scrape
 	def scrape_page(url)
-			return false if Page.find_by(:href => url)
-			scraper = TorScraper.new(url)
+			uri = URI.parse(url)
+			req_url = "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+			req_url += uri.query if uri.query
+			return false if Page.find_by(:href => req_url)
+			
+			print "Attempting to scrape #{req_url}"
+			scraper = TorScraper.new(req_url)
 			begin
 				scrape = scraper.scrape
 			rescue StandardError, SocketError => err
-				puts "#{url} not scraped due to error: #{err}"
+				print " - not scraped due to error: #{err}"
 				return false
 			end
+			print " - success!\n"
 			return scrape
 	end
 
@@ -27,30 +33,20 @@ module Scrape
 		first_scrape = scrape_page(url)
 
 		if first_scrape
-
 			first_page = build_page(first_scrape)
-			if first_page = Page.find(first_page)
+
+			if first_page
 
 				q = first_page.links.to_a
 
-				while !q.empty?  do
-					q.shuffle!
-					sleep = rand(5)
+				while !q.empty? do
+
 					cur_link = q.pop
-					next if !cur_link.local?
-					cur_scrape = scrape_page(cur_link.full_path)
-					if cur_scrape
-						cur_page = build_page(cur_scrape)
-						if cur_page
-							q.push(*cur_page.links.to_a)
-						else
-						    next
-						end
-					else
-						next
-					end
+					##big ol code smell right here
 				end
+
 			end
+			
 		end
 	end
 
@@ -63,10 +59,10 @@ module Scrape
 			site.reload
 		end
 		links = site.links.to_a
-		outsiders = links.reject{|l| l.local? || !l.onion?}
-
+		outsiders = links.reject{|l| l.local? || !l.onion? || Page.find_by(:href => l.full_path)}
+		binding.pry
 		outsiders.each do |s|
-			scrape_site(s.full_path)
+			puts "Attempting to scrape #{s.full_path}"
 			scrape_neighbors(s.full_path, depth - 1)
 		end
 

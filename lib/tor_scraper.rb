@@ -29,7 +29,8 @@ class TorScraper
       rescue
         next
       end
-      if href && href !=~ /[mailto:|javascript:]/
+      
+      if href && href !=~ /[mailto:|javascript:]/ && href[0] != "#"
         links << { :href => href, :content => link.content, :found_on => uri.to_s }
       end
     end

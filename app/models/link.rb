@@ -24,13 +24,16 @@ class Link < ActiveRecord::Base
     end
 
     def full_path
-      @full_path ||=get_full_path
+      @full_path ||= get_full_path
     end
 
 
 
     def get_full_path
-      return href if !(URI.parse(href).host == nil)
+      parsed_href = URI.parse(href)
+      if parsed_href.host
+        return "#{parsed_href.scheme}://#{parsed_href.host}:#{parsed_href.port}#{parsed_href.path}?#{"?#{uri.query}" if uri.query}" 
+      end
       Link.parse_abs_path(found_on_uri, href)
     end
 

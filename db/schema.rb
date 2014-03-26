@@ -13,17 +13,20 @@
 
 ActiveRecord::Schema.define(version: 4) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "links", force: true do |t|
     t.string  "href"
     t.string  "found_on"
-    t.string  "full_path"
+    t.text  "full_path"
     t.text    "content"
     t.integer "page_id"
   end
 
   create_table "pages", force: true do |t|
-    t.string  "href"
-    t.string  "title"
+    t.text  "href"
+    t.text  "title"
     t.text    "description"
     t.integer "site_id"
     t.text    "content"
