@@ -35,16 +35,15 @@ class Link < ActiveRecord::Base
     end
 
     def self.parse_abs_path(parent_uri, path)
-      (path[0] == "/") ? "#{parent_uri.scheme}://#{parent_uri.host}#{path}" : parse_relative(parent_uri, path)
+      (path[0] == "/") ? "#{parent_uri.scheme}://#{parent_uri.host}:#{parent_uri.port}#{path}" : parse_relative(parent_uri, path)
     end
 
     def self.parse_relative(parent_uri, path)
       if parent_uri.path =~ /\/$/
-        "#{parent_uri.scheme}://#{parent_uri.host}#{parent_uri.path}#{path}"
+        "#{parent_uri.scheme}://#{parent_uri.host}:#{parent_uri.port}#{parent_uri.path}#{path}"
       else
-        binding.pry
         slice = (parent_uri.path =~ /\/\w+(\.\w+)?$/) ? parent_uri.path[0..(parent_uri.path =~ /\/\w+(\.\w+)?$/)] : "/"
-        "#{parent_uri.scheme}://#{parent_uri.host}#{slice}#{path}"
+        "#{parent_uri.scheme}://#{parent_uri.host}:#{parent_uri.port}#{slice}#{path}"
       end
     end
 

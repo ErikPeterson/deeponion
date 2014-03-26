@@ -40,8 +40,8 @@ describe TorScraper do
     end
 
     it "gets basic information on the scraped page" do
-      expect(hs_scraper.page[:url]).to eq("http://p4u4zo2jzb6o6xu3.onion/index.html")
-      expect(vanilla_scraper.page[:url]).to eq("http://localhost:8080/index.html")
+      expect(hs_scraper.page[:href]).to eq("http://p4u4zo2jzb6o6xu3.onion/index.html")
+      expect(vanilla_scraper.page[:href]).to eq("http://localhost:8080/index.html")
     end
 
   end

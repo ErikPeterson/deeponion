@@ -11,8 +11,8 @@ class Page < ActiveRecord::Base
 	end
 
 	def site_name=(name)
-		site = Site.find_by(:host_name => name)
-		self.site = site if site
+		site = Site.find_or_create_by(:host_name => name)
+		self.site = site
 	end
 
 end

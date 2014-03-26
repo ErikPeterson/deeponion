@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 3) do
+ActiveRecord::Schema.define(version: 4) do
 
   create_table "links", force: true do |t|
     t.string  "href"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 3) do
     t.string  "title"
     t.text    "description"
     t.integer "site_id"
+    t.text    "content"
   end
 
   create_table "sites", force: true do |t|

@@ -11,20 +11,19 @@ namespace :tor do
 
 	desc "Build db rows based on a successful scrape"
 	task :build_page, [:page] => [:db_env] do |t, args|
-		require "pry"
-		binding.pry
 		phash = args[:page]
 		record = Page.new(phash)
 		if record.save
-			Rake::Task["tor:scrape_log"].call("#{Time.now.to_s} - Page '#{record.title}' at #{record.href} successfully added with #{record.links.count} links", "persist.log")
+			Rake::Task["tor:scrape_log"].invoke("#{Time.now.to_s} - Page '#{record.title}' at #{record.href} successfully added with #{record.links.count} links", "persist.log")
 		else
-			Rake::Task["tor:scrape_log"].call("#{Time.now.to_s} - Page '#{record.title}' at #{record.href} failed to save because: '#{record.errors.full_messages.to_s}'", "persist.log")
+			Rake::Task["tor:scrape_log"].invoke("#{Time.now.to_s} - Page '#{record.title}' at #{record.href} failed to save because: '#{record.errors.full_messages.to_s}'", "persist.log")
 		end
 	end
 
 
 	desc "Load the scraper environment file"
 	task :scrape_env do
+		require 'pry'
 		require 'bundler'
 		Bundler.require(:default)
 		require 'net/http'
@@ -32,6 +31,7 @@ namespace :tor do
 		require 'socksify/http'
 		require 'active_record'
 		require_relative "../tor_scraper.rb"
+		require_relative "scrape_site.rb"
 	end
 
 	desc "Start the Tor process"
@@ -60,7 +60,6 @@ namespace :tor do
 
 	desc "Scrape a page and get its links"
 	task :scrape_page, [:url] => :scrape_env do |t, args|
-		require "pry"
 		url = args[:url]
 		scraper = TorScraper.new(url)
 		begin
@@ -73,4 +72,26 @@ namespace :tor do
 		Rake::Task["tor:build_page"].invoke(scraper.page)
 	end
 
+	desc "Scrape a site entirety"
+	task :scrape_site, [:url] => [:scrape_env, :db_env] do |t, args|
+		TCPSocket::socks_server = "127.0.0.1"
+		TCPSocket::socks_port = 9050
+		url = args[:url]
+		include Scrape
+		scrape_site url
+	end
+
+	desc "Scrape a site and its neighbors"
+	task :scrape_neighbors, [:url, :depth] => [:scrape_env, :db_env] do |t, args|
+		TCPSocket::socks_server = "127.0.0.1"
+		TCPSocket::socks_port = 9050
+		url = args[:url]
+		depth = args[:depth].to_i
+		include Scrape
+		scrape_neighbors url, depth
+	end
 end
+
+
+
+

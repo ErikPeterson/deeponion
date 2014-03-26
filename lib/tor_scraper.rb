@@ -13,8 +13,7 @@ class TorScraper
   end
 
   def get_response
-    @con = Net::HTTP.SOCKSProxy('127.0.0.1', 9050)
-    @con.start(uri.hostname, uri.port, {"User-Agent" => UA}) do |http|
+    Net::HTTP.SOCKSProxy('localhost', 9050).start(uri.hostname, uri.port, {"User-Agent" => UA}) do |http|
       @response = http.get(uri.request_uri)
     end
   end
@@ -25,7 +24,11 @@ class TorScraper
 
   def get_links
     html.css('a').each do |link|
-      href = link.attribute("href").value
+      begin
+        href = link.attribute("href").value
+      rescue
+        next
+      end
       if href && href !=~ /[mailto:|javascript:]/
         links << { :href => href, :content => link.content, :found_on => uri.to_s }
       end
@@ -33,11 +36,33 @@ class TorScraper
   end
 
   def page_description
-    html.css("meta[name=description]")[0].attribute("content").value
+    begin
+      html.css("meta[name=description]")[0].attribute("content").value
+    rescue
+      ""
+    end
   end
 
   def page_title
-    html.css("title")[0].content
+    begin
+      html.css("title")[0].content
+    rescue
+      ""
+    end
+  end
+
+  def get_content
+    str = ""
+    html.traverse do | node|
+      if node.text? and not !node.text =~ /^\s*$/
+          str << node.text
+      end
+    end
+    str
+  end
+
+  def content
+    @content ||= get_content
   end
 
   def get_page
@@ -46,6 +71,7 @@ class TorScraper
       :href => uri.to_s,
       :title => page_title,
       :description => page_description,
+      :content => content,
       :links => links
     }
   end
@@ -55,6 +81,7 @@ class TorScraper
     read
     get_links
     get_page
+    page
   end
 
   class ArgumentError < StandardError
