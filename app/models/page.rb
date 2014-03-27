@@ -1,12 +1,27 @@
 class Page < ActiveRecord::Base
 	validates_presence_of :href
-	validates_uniqueness_of :href
-	has_many :links
+	validates_uniqueness_of :href, :scope => :site_id
+	has_many :links, :dependent => :destroy
 	belongs_to :site
 
-	def links=(*links)
-		links.flatten.each do |link|
-			self.links.build(link)
+	def links=(*links_arr)
+		links_arr.flatten.each do |l|
+			print "\n\t building link #{l[:href]}"
+
+			begin
+				URI.parse(l[:href])
+			rescue URI::InvalidURIError => err
+				puts err
+				next
+			end
+			self.links.build(l)
+			begin 
+				self.save
+				puts " - success!\n"
+			rescue 
+				puts " - failed :( \n"
+				self.links.pop
+			end
 		end
 	end
 
